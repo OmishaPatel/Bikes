@@ -4,6 +4,7 @@ import ShoppingCartOutlinedIcon from "@mui/icons-material/ShoppingCartOutlined";
 import SearchIcon from "@mui/icons-material/Search";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import { mobile } from "../responsive";
+import { Link } from "react-router-dom";
 const Info = styled.div`
   opacity: 0;
   width: 100%;
@@ -90,13 +91,15 @@ const Product = ({ item }) => {
     >
       <Circle />
       <Image src={open ? item.imgFront : item.imgSide} />
-      <Name>{item.name}</Name>
+      <Name>{item.title}</Name>
       <Info>
         <Icon>
           <ShoppingCartOutlinedIcon />
         </Icon>
         <Icon>
-          <SearchIcon />
+          <Link to={`/product/${item._id}`}>
+            <SearchIcon />
+          </Link>
         </Icon>
         <Icon>
           <FavoriteBorderIcon />

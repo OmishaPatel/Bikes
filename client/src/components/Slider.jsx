@@ -4,6 +4,7 @@ import ArrowLeftIcon from "@mui/icons-material/ArrowLeft";
 import React from "react";
 import styled from "styled-components";
 import { mobile } from "../responsive";
+import { Link } from "react-router-dom";
 
 import { sliderItem } from "../data";
 const Container = styled.div`
@@ -60,9 +61,6 @@ const Image = styled.img`
   height: 60%;
   width: 80%;
   transition: 0.4s;
-  &:hover {
-    transform: scale(1.05);
-  }
   ${mobile({ height: "60%", width: "80%", objectFit: "cover" })}
 `;
 
@@ -116,7 +114,9 @@ const Slider = () => {
               <Slide key={item.id}>
                 <ImgContainer>
                   <Image src={item.img} />
-                  <Button>{item.btnInfo}</Button>
+                  <Link to={`/products/${item.cat}`}>
+                    <Button>{item.btnInfo}</Button>
+                  </Link>
                 </ImgContainer>
               </Slide>
             );
