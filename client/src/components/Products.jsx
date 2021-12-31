@@ -1,8 +1,6 @@
 import React from "react";
 import styled from "styled-components";
-import { popularBikes } from "../data";
 import Product from "./Product";
-import { mobile } from "../responsive";
 import axios from "axios";
 import { useState, useEffect } from "react";
 const Container = styled.div`
@@ -11,12 +9,7 @@ const Container = styled.div`
   flex-wrap: wrap;
   justify-content: space-between;
 `;
-const Title = styled.h1`
-  font-size: 40px;
-  text-align: center;
-  color: black;
-  padding-top: 20px;
-`;
+
 const Products = ({ filters, sort, category }) => {
   const [products, setProducts] = useState([]);
   const [filteredProducts, setFilteredProducts] = useState([]);
@@ -62,11 +55,11 @@ const Products = ({ filters, sort, category }) => {
       <Container>
         {category
           ? filteredProducts.map((item) => (
-              <Product item={item} key={item.id} />
+              <Product item={item} key={item._id} />
             ))
           : products
               .slice(0, 6)
-              .map((item) => <Product item={item} key={item.id} />)}
+              .map((item) => <Product item={item} key={item._id} />)}
       </Container>
     </>
   );

@@ -71,11 +71,13 @@ const ProductList = () => {
 
   const handleFilter = (e) => {
     const value = e.target.value;
+
     setFilters({
       ...filters,
       [e.target.name]: value,
     });
   };
+
   const handleImg = (category) => {
     if (category === "mountain") {
       return mountainbike;
@@ -89,8 +91,8 @@ const ProductList = () => {
   };
   return (
     <Container>
-      <Announcement />
       <Navbar />
+      <Announcement />
       <ImgContainer image={handleImg(category)}></ImgContainer>
       <Title>{`${category} Bikes`}</Title>
       <FilterContainer>
@@ -103,7 +105,10 @@ const ProductList = () => {
             <Option>white</Option>
             <Option>black</Option>
             <Option>gray</Option>
-            <Option>blue</Option>
+            <Option>yellow</Option>
+            <Option>orange</Option>
+            <Option>red</Option>
+            <Option>green</Option>
           </Select>
           <Select name="size" onChange={handleFilter}>
             <Option disabled selected>

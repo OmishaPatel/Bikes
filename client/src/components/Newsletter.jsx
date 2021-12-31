@@ -2,6 +2,7 @@ import React from "react";
 import SendIcon from "@mui/icons-material/Send";
 import styled from "styled-components";
 import { mobile } from "../responsive";
+import { useState } from "react";
 const Container = styled.div`
   height: 40vh;
   background-color: #fcf5f5;
@@ -47,17 +48,30 @@ const Button = styled.button`
   cursor: pointer;
 `;
 const Newsletter = () => {
+  const [email, setEmail] = useState(true);
+  const handleClick = () => {
+    setEmail(false);
+  };
   return (
-    <Container>
-      <Title>Sign up for new bikes and special offers.</Title>
-      <Description>We promise not to be jerks about it.</Description>
-      <InputContainer>
-        <Input placeholder="Enter your email" />
-        <Button>
-          <SendIcon />
-        </Button>
-      </InputContainer>
-    </Container>
+    <>
+      {email ? (
+        <Container>
+          <Title>Sign up for new bikes and special offers.</Title>
+          <Description>We promise not to be jerks about it.</Description>
+          <InputContainer>
+            <Input placeholder="Enter your email" />
+            <Button onClick={handleClick}>
+              <SendIcon />
+            </Button>
+          </InputContainer>
+        </Container>
+      ) : (
+        <Container>
+          <Title>THANKS !</Title>
+          <Description>Look for great stuff in your inbox soon!</Description>
+        </Container>
+      )}
+    </>
   );
 };
 

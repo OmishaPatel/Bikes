@@ -1,8 +1,6 @@
 import React, { useState } from "react";
 import styled from "styled-components";
-import ShoppingCartOutlinedIcon from "@mui/icons-material/ShoppingCartOutlined";
 import SearchIcon from "@mui/icons-material/Search";
-import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import { mobile } from "../responsive";
 import { Link } from "react-router-dom";
 const Info = styled.div`
@@ -94,15 +92,9 @@ const Product = ({ item }) => {
       <Name>{item.title}</Name>
       <Info>
         <Icon>
-          <ShoppingCartOutlinedIcon />
-        </Icon>
-        <Icon>
-          <Link to={`/product/${item._id}`}>
+          <Link to={`/product/${item._id}`} className="link">
             <SearchIcon />
           </Link>
-        </Icon>
-        <Icon>
-          <FavoriteBorderIcon />
         </Icon>
       </Info>
     </Container>

@@ -8,6 +8,8 @@ import { mobile } from "../responsive";
 import { useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { publicRequest } from "../axiosMethods";
+import { addProduct } from "../redux/cartRedux";
+import { useDispatch } from "react-redux";
 const Container = styled.div``;
 
 const Wrapper = styled.div`
@@ -128,6 +130,8 @@ const Product = () => {
   const [quantity, setQuantity] = useState(1);
   const [color, setColor] = useState("");
   const [size, setSize] = useState("");
+
+  const dispatch = useDispatch();
   useEffect(() => {
     const getProduct = async () => {
       try {
@@ -148,7 +152,10 @@ const Product = () => {
     }
   };
 
-  const handleClick = () => {};
+  const handleClick = () => {
+    dispatch(addProduct({ ...product, quantity, color, size }));
+  };
+
   return (
     <Container>
       <Navbar />
@@ -163,9 +170,13 @@ const Product = () => {
           <FilterContainer>
             <Filter>
               <FilterTitle>Color</FilterTitle>
-              {product.color?.map((c) => {
+              {product.color?.map((col) => {
                 return (
-                  <FilterColor color={c} key={c} onClick={() => setColor(c)} />
+                  <FilterColor
+                    color={col}
+                    key={col}
+                    onClick={() => setColor(col)}
+                  />
                 );
               })}
             </Filter>
@@ -190,6 +201,7 @@ const Product = () => {
                 onClick={() => handleQuantity("inc")}
               />
             </AmountContainer>
+
             <Button onClick={handleClick}>ADD TO CART</Button>
           </AddContainer>
         </InfoContainer>

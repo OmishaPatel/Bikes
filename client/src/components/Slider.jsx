@@ -114,7 +114,7 @@ const Slider = () => {
               <Slide key={item.id}>
                 <ImgContainer>
                   <Image src={item.img} />
-                  <Link to={`/products/${item.cat}`}>
+                  <Link to={`/products/${item.cat}`} className="link">
                     <Button>{item.btnInfo}</Button>
                   </Link>
                 </ImgContainer>

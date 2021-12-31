@@ -1,10 +1,16 @@
-import RemoveIcon from "@mui/icons-material/Remove";
-import AddIcon from "@mui/icons-material/Add";
 import styled from "styled-components";
 import Announcement from "../components/Announcement";
 import Footer from "../components/Footer";
 import Navbar from "../components/Navbar";
 import { mobile } from "../responsive";
+import { useSelector } from "react-redux";
+import StripeCheckout from "react-stripe-checkout";
+import { useState, useEffect } from "react";
+import { userRequest } from "../axiosMethods";
+import { useNavigate, Link } from "react-router-dom";
+
+const KEY = process.env.REACT_APP_STRIPE_KEY;
+
 const Container = styled.div``;
 
 const Wrapper = styled.div`
@@ -56,7 +62,10 @@ const Info = styled.div`
 const Product = styled.div`
   display: flex;
   justify-content: space-between;
-  ${mobile({ flexDirection: "column" })}
+  padding-bottom: 10px;
+  padding-top: 10px;
+  border-bottom: 2px solid darkgray;
+  ${mobile({ flexDirection: "column", borderBottom: "none" })}
 `;
 
 const ProductDetail = styled.div`
@@ -96,31 +105,10 @@ const PriceDetail = styled.div`
   justify-content: center;
 `;
 
-const ProductAmountContainer = styled.div`
-  display: flex;
-  align-items: center;
-  margin-bottom: 20px;
-  ${mobile({ marginBottom: "10px", marginTop: "10px" })}
-`;
-
-const ProductAmount = styled.div`
-  font-size: 24px;
-  margin: 5px;
-  ${mobile({ margin: "10px 10px", fontSize: "20px" })}
-`;
-
 const ProductPrice = styled.div`
   font-size: 30px;
   font-weight: 200;
   ${mobile({ fontSize: "20px" })}
-`;
-
-const Hr = styled.hr`
-  background-color: #eee;
-  border: none;
-  height: 3px;
-  margin-top: 20px;
-  margin-bottom: 20px;
 `;
 
 const Summary = styled.div`
@@ -154,9 +142,37 @@ const Button = styled.button`
   background-color: black;
   color: white;
   font-weight: 600;
+  cursor: pointer;
 `;
 
 const Cart = () => {
+  const cart = useSelector((state) => state.cart);
+  const [stripeToken, setStripeToken] = useState(null);
+  const navigate = useNavigate();
+  const onToken = (token) => {
+    setStripeToken(token);
+  };
+
+  useEffect(() => {
+    const makeRequest = async () => {
+      try {
+        const res = await userRequest.post("/checkout/payment", {
+          tokenId: stripeToken.id,
+          amount: cart.total * 100,
+        });
+
+        navigate("/success", {
+          state: {
+            stripeData: res.data,
+            products: cart,
+          },
+        });
+      } catch (err) {
+        throw err;
+      }
+    };
+    stripeToken && makeRequest();
+  }, [stripeToken, cart.total, navigate, cart]);
   return (
     <Container>
       <Navbar />
@@ -164,86 +180,70 @@ const Cart = () => {
       <Wrapper>
         <Title>Your Cart</Title>
         <Top>
-          <TopButton>Continue Shopping</TopButton>
+          <Link to="/" className="link">
+            <TopButton>Continue Shopping</TopButton>
+          </Link>
           <TopTexts>
-            <TopText>Shopping Bag(2)</TopText>
-            <TopText>Your Wishlist (0)</TopText>
+            <TopText>Shopping Bag ({cart.quantity})</TopText>
           </TopTexts>
-          <TopButton type="filled">Checkout Now</TopButton>
         </Top>
         <Bottom>
           <Info>
-            <Product>
-              <ProductDetail>
-                <Image src="https://i.ibb.co/ngP7tzQ/mountainbikeside.png" />
-                <Details>
-                  <ProductName>
-                    <b>Bike:</b> Synapse Carbon
-                  </ProductName>
-                  <ProductId>
-                    <b>ID:</b> 93813718293
-                  </ProductId>
-                  <ProductColor color="black" />
-                  <ProductSize>
-                    <b>Size:</b> M
-                  </ProductSize>
-                </Details>
-              </ProductDetail>
-              <PriceDetail>
-                <ProductAmountContainer>
-                  <AddIcon />
-                  <ProductAmount>2</ProductAmount>
-                  <RemoveIcon />
-                </ProductAmountContainer>
-                <ProductPrice>$ 3000</ProductPrice>
-              </PriceDetail>
-            </Product>
-            <Hr />
-            <Product>
-              <ProductDetail>
-                <Image src="https://i.ibb.co/SNWpBhs/ebikeside.png" />
-                <Details>
-                  <ProductName>
-                    <b>Bike:</b> Trgun Carbon
-                  </ProductName>
-                  <ProductId>
-                    <b>ID:</b> 93813718293
-                  </ProductId>
-                  <ProductColor color="gray" />
-                  <ProductSize>
-                    <b>Size:</b> L
-                  </ProductSize>
-                </Details>
-              </ProductDetail>
-              <PriceDetail>
-                <ProductAmountContainer>
-                  <AddIcon />
-                  <ProductAmount>1</ProductAmount>
-                  <RemoveIcon />
-                </ProductAmountContainer>
-                <ProductPrice>$ 2000</ProductPrice>
-              </PriceDetail>
-            </Product>
+            {cart.products.map((product) => (
+              <Product key={product._id}>
+                <ProductDetail>
+                  <Image src={product.imgSide} />
+                  <Details>
+                    <ProductName>
+                      <b>Bike:</b> {product.title}
+                    </ProductName>
+                    <ProductId>
+                      <b>ID:</b> {product._id}
+                    </ProductId>
+                    <ProductColor color={product.color} />
+                    <ProductSize>
+                      <b>Size:</b> {product.size}
+                    </ProductSize>
+                  </Details>
+                </ProductDetail>
+                <PriceDetail>
+                  <ProductPrice>
+                    $ {product.price * product.quantity}
+                  </ProductPrice>
+                </PriceDetail>
+              </Product>
+            ))}
           </Info>
           <Summary>
             <SummaryTitle>Order Summary</SummaryTitle>
             <SummaryItem>
               <SummaryItemText>Subtotal</SummaryItemText>
-              <SummaryItemPrice>$ 5000</SummaryItemPrice>
+              <SummaryItemPrice>$ {cart.total}</SummaryItemPrice>
             </SummaryItem>
             <SummaryItem>
               <SummaryItemText>Estimated Shipping</SummaryItemText>
-              <SummaryItemPrice>$ 100</SummaryItemPrice>
+              <SummaryItemPrice>$ 500</SummaryItemPrice>
             </SummaryItem>
             <SummaryItem>
               <SummaryItemText>Shipping Discount</SummaryItemText>
-              <SummaryItemPrice>$ -100</SummaryItemPrice>
+              <SummaryItemPrice>$ -500</SummaryItemPrice>
             </SummaryItem>
             <SummaryItem type="total">
               <SummaryItemText>Total</SummaryItemText>
-              <SummaryItemPrice>$ 5000</SummaryItemPrice>
+              <SummaryItemPrice>$ {cart.total}</SummaryItemPrice>
             </SummaryItem>
-            <Button>Checkout Now</Button>
+            <StripeCheckout
+              name="Bikes Shop"
+              image="https://i.ibb.co/xSzFjkB/darkbluehybridside.png"
+              billingAddress
+              shippingAddress
+              description={`Your total is $${cart.total}`}
+              amount={cart.total * 100}
+              token={onToken}
+              stripeKey={KEY}
+            >
+              <Button>Checkout Now</Button>
+            </StripeCheckout>
           </Summary>
         </Bottom>
       </Wrapper>

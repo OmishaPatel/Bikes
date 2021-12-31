@@ -1,8 +1,8 @@
 import React from "react";
 import styled from "styled-components";
-import ReactPlayer from "react-player";
 import bike from "../images/bike.mp4";
 import { mobile } from "../responsive";
+import { Link } from "react-router-dom";
 const Container = styled.div`
   display: flex;
   width: 100%;
@@ -68,7 +68,9 @@ const Hero = () => {
       </Video>
       <Title>Ride Unleashed</Title>
       <SubTitle>Our bike of the year</SubTitle>
-      <Button>Learn More</Button>
+      <Link to="/learnmore" className="link">
+        <Button>Learn More</Button>
+      </Link>
     </Container>
   );
 };
