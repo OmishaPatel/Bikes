@@ -1,0 +1,54 @@
+version: "3"
+services:
+  server-api:
+    restart: always
+    
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    container_name: Bikeshop_backend
+    volumes:
+      - /app/node_modules
+      - ./api:/app
+    env_file:
+      - docker.api.env
+    ports:
+      - "5000:5000"
+   
+    networks:
+      - mern-bike-shop
+
+  client:
+    depends_on:
+      - server-api
+    restart: always
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    stdin_open: true
+    container_name: Bikeshop_frontend
+    volumes:
+      - /app/node_modules
+      - ./client:/app
+    
+    env_file:
+      - docker.front.env   
+    networks:
+      - mern-bike-shop
+  nginx:
+    restart: always
+    depends_on:
+      - server-api
+      - client
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+
+    networks:
+      - mern-bike-shop
+networks:
+  mern-bike-shop:
+    driver: bridge
+
