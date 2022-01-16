@@ -14,4 +14,4 @@
 
 # Website URL
 
-![Demo](http://omi-bike.shop)
+http://omi-bike.shop
